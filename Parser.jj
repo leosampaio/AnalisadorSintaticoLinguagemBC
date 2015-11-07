@@ -1,0 +1,203 @@
+/******************************************************************
+*	Este documento contém exemplos sobre: 
+*		.options;
+*		.LOOKAHEAD Global(options) e local;
+*		.Adaptação para aceitar entrada via System.in ou arquivo
+*       .Tratamento de commentários da forma / *....* /
+*			- Duas maneiras:
+*				(1)	inserir no tipo SPECIAL_TOKEN; ou
+*				(2)	utilizar o recurso do MORE. ;
+*
+*		.Tratamento de commentários da forma # ... \n
+*			utilizando a maneira (1);
+*		.regras (de tokens) locais;
+*
+********************************************************************/
+options{
+  	IGNORE_CASE = true;  /* IN CASE OF INSENSITIVE LANGUAGE */
+	LOOKAHEAD   = 2;     /* INSERÇÃO DE LOOKAHEAD GLOBAL */
+	STATIC 		= false; /* MÉTODOS GERADOS. TRUE (DEFAULT): SERAO ESTATICOS, FALSE: NAO ESTATICOS */
+}
+PARSER_BEGIN(ParserExample)
+import java.io.*;
+
+public class ParserExample {
+	public static void main(String[] args) throws ParseException, TokenMgrError {
+		ParserExample t=null;
+		if (args.length == 0) {
+			t = new ParserExample(System.in);
+		} else if (args.length == 1) {
+			// lê do arquivo cujo nome esta em args[0]
+			try {
+				FileInputStream fis = new FileInputStream(args[0]);
+				t = new ParserExample(fis);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			// Formato de entrada invalido
+			System.out.println("Formato de entrada invalido.");
+			return;
+		}
+		t.start();
+	}
+}
+PARSER_END(ParserExample)
+
+/*SKIP: Tokens que devem ser ignorados */
+SKIP:
+{
+	" "
+|	"\f"
+|	"\r"
+|	"\n"
+|	"\r\n"
+|	"\t"
+|	<COMENTARIO: "//" (~["\n", "\r"])*>
+|	"/*" : WithinComment
+}
+
+<WithinComment> SKIP :
+{
+  "*/" : DEFAULT		 	
+}
+
+<WithinComment> MORE :
+{
+  <~[]>
+}
+
+TOKEN: /* palavras reservadas */
+{
+	<SQRT: "sqrt">
+|	<IF: "if">
+|	<ELSE: "else">
+|	<WHILE: "while">
+| 	<FOR: "for">
+| 	<PRINT: "print">
+| 	<BREAK: "break">
+| 	<CONTINUE: "continue">
+| 	<QUIT: "quit">
+|	<LENGTH: "length">
+|	<SCALE: "scale">
+|	<IBASE: "ibase">
+|	<OBASE: "obase">
+|	<LAST: "last">
+|	<DEFINE: "define">
+|	<AUTO: "auto">
+|	<RETORNO: "return">
+}
+
+TOKEN:
+{
+	< NUM: (["0"-"9"])+("."(["0"-"9"])*)?|"."(["0"-"9"])+ >
+| 	< STRING: "\"" (~["\""])* "\"">
+| 	< ID: ["a"-"z","A"-"Z"](["a"-"z","A"-"Z","0"-"9","_"])*>
+}
+
+TOKEN: /* operadores */
+{
+	<ATRIBUICAO: "=">
+| 	<ATRIBUICAOSUM: "+=">
+| 	<ATRIBUICAOSUB: "-=">
+| 	<ATRIBUICAOMUL: "*=">
+| 	<ATRIBUICAODIV: "/=">
+| 	<ATRIBUICAOMOD: "%=">
+| 	<ATRIBUICAOPOW: "^=">
+|	<MUL: "*">
+| 	<DIV: "/">
+| 	<MOD: "%">
+|	<SUB: "-">
+|	<SUM: "+">
+|	<INC: "++">
+|	<DEC: "--">
+|	<POW: "^">
+}
+
+TOKEN: /* compare */
+{
+	<EQUAL: "==">
+| 	<MINOREQ: "<=">
+| 	<GREATEREQ: ">=">
+| 	<DIF: "!=">
+| 	<MINOR: "<">
+| 	<GREATER: ">">
+|	<OR: "||">
+|	<AND: "&&">
+|	<NOT: "!">
+}
+
+TOKEN: /* separadores */
+{
+	<DOT: ".">
+|	<CHAVED: "}">
+|	<CHAVEE: "{">
+|	<COLCHD: "]">
+|	<COLCHE: "[">
+|	<PARD: ")">
+|	<PARE: "(">
+|	<COMMA: ",">
+|	<NULL: ";">
+}
+
+/* GRAMMAR START */
+void start():
+{ Token t; }
+{	
+	( 
+		t = <ID> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <NUM> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <STRING> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <ATRIBUICAO> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <ATRIBUICAODIV> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <ATRIBUICAOMOD> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <ATRIBUICAOMUL> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <ATRIBUICAOPOW> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <ATRIBUICAOSUB> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <ATRIBUICAOSUM> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <MUL> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <DIV> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	|	t = <MOD> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <SUB> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <SUM> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <INC> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <DEC> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <POW> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <EQUAL> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <MINOREQ> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <GREATEREQ> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <DIF> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <MINOR> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <GREATER> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <OR> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <AND> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <NOT> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <DOT> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <CHAVED> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <CHAVEE> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <COLCHD> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <COLCHE> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <PARD>  {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <PARE> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <COMMA> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	|	t = <NULL> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <SQRT> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <IF> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <WHILE> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <FOR> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <PRINT> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <BREAK> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <CONTINUE> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <QUIT> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <LENGTH> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <SCALE> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <IBASE> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <OBASE> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <LAST> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <DEFINE> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <RETORNO> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <AUTO> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	| 	t = <ELSE> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
+	)*
+	<EOF> {System.out.println("Final do arquivo");}
+}
