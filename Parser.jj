@@ -15,7 +15,7 @@
 ********************************************************************/
 options{
   	IGNORE_CASE = true;  /* IN CASE OF INSENSITIVE LANGUAGE */
-	LOOKAHEAD   = 2;     /* INSERÇÃO DE LOOKAHEAD GLOBAL */
+	LOOKAHEAD   = 1;     /* INSERÇÃO DE LOOKAHEAD GLOBAL */
 	STATIC 		= false; /* MÉTODOS GERADOS. TRUE (DEFAULT): SERAO ESTATICOS, FALSE: NAO ESTATICOS */
 }
 PARSER_BEGIN(ParserExample)
@@ -31,7 +31,8 @@ public class ParserExample {
 			try {
 				FileInputStream fis = new FileInputStream(args[0]);
 				t = new ParserExample(fis);
-			} catch (Exception e) {
+			} catch (Throwable e) {
+				System.out.println("Erro de Sintaxe: " + e.getMessage());
 				e.printStackTrace();
 			}
 		} else {
@@ -39,7 +40,7 @@ public class ParserExample {
 			System.out.println("Formato de entrada invalido.");
 			return;
 		}
-		t.start();
+		t.bc();
 	}
 }
 PARSER_END(ParserExample)
@@ -50,7 +51,6 @@ SKIP:
 	" "
 |	"\f"
 |	"\r"
-|	"\n"
 |	"\r\n"
 |	"\t"
 |	<COMENTARIO: "//" (~["\n", "\r"])*>
@@ -137,10 +137,182 @@ TOKEN: /* separadores */
 |	<PARD: ")">
 |	<PARE: "(">
 |	<COMMA: ",">
-|	<NULL: ";">
+|	<SEMICOLON: ";">
+|	<LINEBREAK: "\n">
 }
 
 /* GRAMMAR START */
+
+/* Loop inicial P1 */
+void bc(): {} 
+{
+	(comando() | definicao_de_funcao())+ <QUIT>
+}
+
+/* Comandos P2 */
+
+void comando(): {}
+{
+	E()
+	| comando_composto()
+	| E_IF()
+	| E_WHILE()
+	| E_FOR()
+	| <BREAK>
+	| separador()
+	| <CONTINUE>
+	| E_PRINT()
+	| E_RETORNO()
+}
+
+void comando_composto(): {}
+{
+	<CHAVEE> lista_de_comandos() <CHAVED>
+}
+
+void lista_de_comandos(): {}
+{
+	(comando())+
+}
+
+void separador(): {}
+{
+	<SEMICOLON>
+	| <LINEBREAK>
+}
+
+void E_IF(): {}
+{
+	<IF> <PARE> E() <PARD> comando() [LOOKAHEAD(1) <ELSE> comando()]
+}
+
+void E_WHILE(): {} 
+{
+	<WHILE> <PARE> E() <PARD> comando()
+}
+
+void E_FOR(): {} 
+{
+	<FOR> <PARE> [E()] <SEMICOLON> [E()] <SEMICOLON> [E()] <PARD> comando()
+}
+
+void E_PRINT(): {} 
+{
+	<PRINT> lista_de_E()
+}
+
+void lista_de_E(): {} 
+{
+	E() (<COMMA> E())*
+}
+
+/* Comandos P2 */
+
+void E(): {} 
+{
+	E1() (<OR> E1())*
+}
+
+void E1(): {} 
+{
+	E2() (<AND> E2())*
+}
+
+void E2(): {} 
+{
+	[<NOT>] E3()
+}
+
+void E3(): {} 
+{
+	E4() ((<EQUAL> | <MINOREQ> | <GREATEREQ> | <DIF> | <MINOR> | <GREATER>) E4())*
+}
+
+void E4(): {} 
+{
+	E5() [
+		(
+			<ATRIBUICAO> 
+			| <ATRIBUICAODIV> 
+			| <ATRIBUICAOMOD> 
+			| <ATRIBUICAOMUL> 
+			| <ATRIBUICAOPOW> 
+			| <ATRIBUICAOSUB> 
+			| <ATRIBUICAOSUM>
+		) 
+		E4()
+	]
+}
+
+void E5(): {} 
+{
+	E6() (LOOKAHEAD(3) (<SUM> | <SUB>) E6())*
+}
+
+void E6(): {} 
+{
+	E7() ((<DIV> | <MOD> | <MUL>) E7())*
+}
+
+void E7(): {} 
+{
+	E8() [<POW> E7()]
+}
+
+void E8(): {} 
+{
+	[<SUB>] E9()
+}
+
+void E9(): {} 
+{
+	[<INC> | <DEC>] E9_postfix()
+}
+
+void E9_postfix(): {}
+{
+	E10() [<INC> | <DEC>]
+}
+
+void E10(): {}
+{
+	<NUM>
+	| <PARE> E() <PARD>
+	| <SQRT> <PARE> E() <PARD>
+	| <LENGTH> <PARE> E() <PARD>
+	| LOOKAHEAD(2) <SCALE> <PARE> E() <PARD>
+	| LOOKAHEAD(2) chamada_de_funcao()
+	| LOOKAHEAD(2) <ID>
+	| <ID> <COLCHE> E() <COLCHD>
+	| <STRING>
+	| <IBASE> | <OBASE> | <SCALE> | <LAST> | <DOT>
+}
+
+void chamada_de_funcao(): {}
+{
+	<ID> <PARE> lista_de_E() <PARD>
+}
+
+void definicao_de_funcao(): {}
+{
+	<DEFINE> <ID> <PARE> lista_de_var() <PARD> [separador()]
+	<CHAVEE> [separador()]
+		[<AUTO> lista_de_var() separador()]
+		lista_de_comandos()
+	<CHAVED>
+}
+
+void E_RETORNO(): {}
+{
+	LOOKAHEAD(2) <RETORNO> <PARE> [E()] <PARD>
+	| <RETORNO> [E()]
+}
+
+void lista_de_var(): {}
+{
+	<ID> [<COLCHE><COLCHD>] (<COMMA> <ID> [<COLCHE><COLCHD>])*
+}
+
 void start():
 { Token t; }
 {	
@@ -180,7 +352,6 @@ void start():
 	| 	t = <PARD>  {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
 	| 	t = <PARE> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
 	| 	t = <COMMA> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
-	|	t = <NULL> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
 	| 	t = <SQRT> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
 	| 	t = <IF> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}
 	| 	t = <WHILE> {System.out.println("@(" + t.beginLine + "," + t.beginColumn + ")" + "    " + tokenImage[t.kind] + "	- " + t.image);}

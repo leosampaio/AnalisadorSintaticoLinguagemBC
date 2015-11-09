@@ -9,113 +9,115 @@ public interface ParserExampleConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int COMENTARIO = 7;
+  int COMENTARIO = 6;
   /** RegularExpression Id. */
-  int SQRT = 11;
+  int SQRT = 10;
   /** RegularExpression Id. */
-  int IF = 12;
+  int IF = 11;
   /** RegularExpression Id. */
-  int ELSE = 13;
+  int ELSE = 12;
   /** RegularExpression Id. */
-  int WHILE = 14;
+  int WHILE = 13;
   /** RegularExpression Id. */
-  int FOR = 15;
+  int FOR = 14;
   /** RegularExpression Id. */
-  int PRINT = 16;
+  int PRINT = 15;
   /** RegularExpression Id. */
-  int BREAK = 17;
+  int BREAK = 16;
   /** RegularExpression Id. */
-  int CONTINUE = 18;
+  int CONTINUE = 17;
   /** RegularExpression Id. */
-  int QUIT = 19;
+  int QUIT = 18;
   /** RegularExpression Id. */
-  int LENGTH = 20;
+  int LENGTH = 19;
   /** RegularExpression Id. */
-  int SCALE = 21;
+  int SCALE = 20;
   /** RegularExpression Id. */
-  int IBASE = 22;
+  int IBASE = 21;
   /** RegularExpression Id. */
-  int OBASE = 23;
+  int OBASE = 22;
   /** RegularExpression Id. */
-  int LAST = 24;
+  int LAST = 23;
   /** RegularExpression Id. */
-  int DEFINE = 25;
+  int DEFINE = 24;
   /** RegularExpression Id. */
-  int AUTO = 26;
+  int AUTO = 25;
   /** RegularExpression Id. */
-  int RETORNO = 27;
+  int RETORNO = 26;
   /** RegularExpression Id. */
-  int NUM = 28;
+  int NUM = 27;
   /** RegularExpression Id. */
-  int STRING = 29;
+  int STRING = 28;
   /** RegularExpression Id. */
-  int ID = 30;
+  int ID = 29;
   /** RegularExpression Id. */
-  int ATRIBUICAO = 31;
+  int ATRIBUICAO = 30;
   /** RegularExpression Id. */
-  int ATRIBUICAOSUM = 32;
+  int ATRIBUICAOSUM = 31;
   /** RegularExpression Id. */
-  int ATRIBUICAOSUB = 33;
+  int ATRIBUICAOSUB = 32;
   /** RegularExpression Id. */
-  int ATRIBUICAOMUL = 34;
+  int ATRIBUICAOMUL = 33;
   /** RegularExpression Id. */
-  int ATRIBUICAODIV = 35;
+  int ATRIBUICAODIV = 34;
   /** RegularExpression Id. */
-  int ATRIBUICAOMOD = 36;
+  int ATRIBUICAOMOD = 35;
   /** RegularExpression Id. */
-  int ATRIBUICAOPOW = 37;
+  int ATRIBUICAOPOW = 36;
   /** RegularExpression Id. */
-  int MUL = 38;
+  int MUL = 37;
   /** RegularExpression Id. */
-  int DIV = 39;
+  int DIV = 38;
   /** RegularExpression Id. */
-  int MOD = 40;
+  int MOD = 39;
   /** RegularExpression Id. */
-  int SUB = 41;
+  int SUB = 40;
   /** RegularExpression Id. */
-  int SUM = 42;
+  int SUM = 41;
   /** RegularExpression Id. */
-  int INC = 43;
+  int INC = 42;
   /** RegularExpression Id. */
-  int DEC = 44;
+  int DEC = 43;
   /** RegularExpression Id. */
-  int POW = 45;
+  int POW = 44;
   /** RegularExpression Id. */
-  int EQUAL = 46;
+  int EQUAL = 45;
   /** RegularExpression Id. */
-  int MINOREQ = 47;
+  int MINOREQ = 46;
   /** RegularExpression Id. */
-  int GREATEREQ = 48;
+  int GREATEREQ = 47;
   /** RegularExpression Id. */
-  int DIF = 49;
+  int DIF = 48;
   /** RegularExpression Id. */
-  int MINOR = 50;
+  int MINOR = 49;
   /** RegularExpression Id. */
-  int GREATER = 51;
+  int GREATER = 50;
   /** RegularExpression Id. */
-  int OR = 52;
+  int OR = 51;
   /** RegularExpression Id. */
-  int AND = 53;
+  int AND = 52;
   /** RegularExpression Id. */
-  int NOT = 54;
+  int NOT = 53;
   /** RegularExpression Id. */
-  int DOT = 55;
+  int DOT = 54;
   /** RegularExpression Id. */
-  int CHAVED = 56;
+  int CHAVED = 55;
   /** RegularExpression Id. */
-  int CHAVEE = 57;
+  int CHAVEE = 56;
   /** RegularExpression Id. */
-  int COLCHD = 58;
+  int COLCHD = 57;
   /** RegularExpression Id. */
-  int COLCHE = 59;
+  int COLCHE = 58;
   /** RegularExpression Id. */
-  int PARD = 60;
+  int PARD = 59;
   /** RegularExpression Id. */
-  int PARE = 61;
+  int PARE = 60;
   /** RegularExpression Id. */
-  int COMMA = 62;
+  int COMMA = 61;
   /** RegularExpression Id. */
-  int NULL = 63;
+  int SEMICOLON = 62;
+  /** RegularExpression Id. */
+  int LINEBREAK = 63;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -125,69 +127,69 @@ public interface ParserExampleConstants {
   /** Literal token values. */
   String[] tokenImage = {
     "<EOF>",
-    "<SPACE>",
+    "\" \"",
     "\"\\f\"",
-    "<CR>",
-    "<EOL>",
-    "<CREOL>",
-    "<TAB>",
+    "\"\\r\"",
+    "\"\\r\\n\"",
+    "\"\\t\"",
     "<COMENTARIO>",
-    "<COMENTARIOBLOCOABRE>",
-    "<COMENTARIOBLOCOFECHA>",
-    "<token of kind 10>",
-    "<SQRT>",
-    "<IF>",
-    "<ELSE>",
-    "<WHILE>",
-    "<FOR>",
-    "<PRINT>",
-    "<BREAK>",
-    "<CONTINUE>",
-    "<QUIT>",
-    "<LENGTH>",
-    "<SCALE>",
-    "<IBASE>",
-    "<OBASE>",
-    "<LAST>",
-    "<DEFINE>",
-    "<AUTO>",
-    "<RETORNO>",
+    "\"/*\"",
+    "\"*/\"",
+    "<token of kind 9>",
+    "\"sqrt\"",
+    "\"if\"",
+    "\"else\"",
+    "\"while\"",
+    "\"for\"",
+    "\"print\"",
+    "\"break\"",
+    "\"continue\"",
+    "\"quit\"",
+    "\"length\"",
+    "\"scale\"",
+    "\"ibase\"",
+    "\"obase\"",
+    "\"last\"",
+    "\"define\"",
+    "\"auto\"",
+    "\"return\"",
     "<NUM>",
     "<STRING>",
     "<ID>",
-    "<ATRIBUICAO>",
-    "<ATRIBUICAOSUM>",
-    "<ATRIBUICAOSUB>",
-    "<ATRIBUICAOMUL>",
-    "<ATRIBUICAODIV>",
-    "<ATRIBUICAOMOD>",
-    "<ATRIBUICAOPOW>",
-    "<MUL>",
-    "<DIV>",
-    "<MOD>",
-    "<SUB>",
-    "<SUM>",
-    "<INC>",
-    "<DEC>",
-    "<POW>",
-    "<EQUAL>",
-    "<MINOREQ>",
-    "<GREATEREQ>",
-    "<DIF>",
-    "<MINOR>",
-    "GREATER>",
-    "<OR>",
-    "<AND>",
-    "<NOT>",
-    "<DOT>",
-    "<CHAVED>",
-    "<CHAVEE>",
-    "<COLCHD>",
-    "<COLCHE>",
-    "<PARD>",
-    "<PARE>",
-    "<COMMA>",
-    "<NULL>",
+    "\"=\"",
+    "\"+=\"",
+    "\"-=\"",
+    "\"*=\"",
+    "\"/=\"",
+    "\"%=\"",
+    "\"^=\"",
+    "\"*\"",
+    "\"/\"",
+    "\"%\"",
+    "\"-\"",
+    "\"+\"",
+    "\"++\"",
+    "\"--\"",
+    "\"^\"",
+    "\"==\"",
+    "\"<=\"",
+    "\">=\"",
+    "\"!=\"",
+    "\"<\"",
+    "\">\"",
+    "\"||\"",
+    "\"&&\"",
+    "\"!\"",
+    "\".\"",
+    "\"}\"",
+    "\"{\"",
+    "\"]\"",
+    "\"[\"",
+    "\")\"",
+    "\"(\"",
+    "\",\"",
+    "\";\"",
+    "\"\\n\"",
   };
 
 }
